@@ -1,0 +1,24 @@
+{
+  "name": "task-app-server",
+  "version": "1.0.0",
+  "description": "",
+  "author": "William Egge <lockegge@gmail.com>",
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kajimas/task-app-server"
+  },
+  "scripts": {
+    "start": "./bin/app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-errors": "^2.0.0",
+    "pino": "^8.16.2",
+    "pino-http": "^8.5.1",
+    "pino-pretty": "^10.2.3"
+  }
+}
