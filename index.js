@@ -61,6 +61,12 @@ app.get("/", (req, res) => {
   res.send("hello world");
 });
 
+app.get("/api/tasks", (req, res) => {
+  Task.find({completed: "false"})
+    .then((tasks) => res.json(tasks))
+    .catch((err) => console.log(err));
+});
+
 app.listen(process.env.PORT || 3000, () => {
   console.log(`server is running on port ${process.env.PORT}`);
 });
