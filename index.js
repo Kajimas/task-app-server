@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 
 // MongoDB Atlas Database Connection String
 const uri =
-  "mongodb+srv://lockegge:PotXHutr0Uc1t6NW@cluster0.llplsha.mongodb.net/?retryWrites=true&w=majority";
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.llplsha.mongodb.net/?retryWrites=true&w=majority`;
 
 mongoose
   .connect(uri)
