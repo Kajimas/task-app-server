@@ -1,14 +1,16 @@
 "use strict";
+
 const express = require("express");
 const app = express();
 const env = require("dotenv").config();
+
+app.use(express.json());
 
 // Use mongoose to connect to mongodb
 const mongoose = require("mongoose");
 
 // MongoDB Atlas Database Connection String
-const uri =
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.llplsha.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.llplsha.mongodb.net/?retryWrites=true&w=majority`;
 
 mongoose
   .connect(uri)
@@ -23,7 +25,7 @@ const TaskSchema = new mongoose.Schema({
   },
   description: String,
   completed: {
-    type: String,
+    type: Boolean,
     required: true,
   },
 });
@@ -62,8 +64,18 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/tasks", (req, res) => {
-  Task.find({completed: "false"})
+  Task.find({ completed: "false" })
     .then((tasks) => res.json(tasks))
+    .catch((err) => console.log(err));
+});
+
+app.post("/api/tasks", (req, res) => {
+  Task.create({
+    title: req.body.title,
+    description: req.body.description,
+    completed: req.body.completed,
+  })
+    .then((task) => res.json(task))
     .catch((err) => console.log(err));
 });
 
