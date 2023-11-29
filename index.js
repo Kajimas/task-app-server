@@ -12,7 +12,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 
 async function connectDB() {
   try {
-    await mongoose.connect(uri)
+    await mongoose.connect(uri);
     console.log("MongoDB Connected");
   } catch (err) {
     console.log(`Mongoose connection error: ${err}`);
@@ -73,6 +73,44 @@ app.post("/api/tasks", async (req, res) => {
       completed: req.body.completed,
     });
     res.json(task);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: err.message });
+  }
+});
+
+app.put("/api/tasks/:id", async (req, res) => {
+  const taskId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(taskId)) {
+    return res.status(400).send({ error: "Invalid Task ID" });
+  }
+  try {
+    const task = await Task.findByIdAndUpdate(taskId, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.json(task);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: err.message });
+  }
+});
+
+app.delete("/api/tasks/:id", async (req, res) => {
+  const taskId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(taskId)) {
+    return res.status(400).send({ error: "Invalid Task ID" });
+  }
+
+  try {
+    const task = await Task.findByIdAndDelete(taskId);
+
+    if (!task) {
+      return res.status(404).send({ error: "Task not found" });
+    }
+
+    res.status(200).send({ message: "Task deleted successfully" });
   } catch (err) {
     console.log(err);
     res.status(500).send({ message: err.message });
