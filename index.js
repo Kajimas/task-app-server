@@ -1,15 +1,122 @@
-'use strict'
-const express = require('express');
+"use strict";
+
+const express = require("express");
+const mongoose = require("mongoose");
 const app = express();
+require("dotenv").config();
 
-const PORT = 3000;
+app.use(express.json());
 
-// route
-app.get("/",(req, res)=>{
-  res.send("hello world")
-})
+// MongoDB Atlas Database Connection String
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.llplsha.mongodb.net/?retryWrites=true&w=majority`;
 
-// app listen
+async function connectDB() {
+  try {
+    await mongoose.connect(uri);
+    console.log("MongoDB Connected");
+  } catch (err) {
+    console.log(`Mongoose connection error: ${err}`);
+    process.exit(1);
+  }
+}
 
+connectDB();
 
-app.listen(PORT);
+// Define a schema
+const TaskSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  description: String,
+  completed: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+const Task = mongoose.model("Task", TaskSchema);
+
+mongoose.connection.on("error", (err) => {
+  console.log(`Mongoose connection error: ${err}`);
+});
+
+process.on("SIGINT", async () => {
+  await mongoose.connection.close();
+  console.log(
+    "Mongoose default connection disconnected through app termination"
+  );
+  process.exit(0);
+});
+
+// Routes
+
+app.get("/", (req, res) => {
+  res.send("hello world");
+});
+
+app.get("/api/tasks", async (req, res) => {
+  try {
+    const tasks = await Task.find({ completed: "false" });
+    res.json(tasks);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: err.message });
+  }
+});
+
+app.post("/api/tasks", async (req, res) => {
+  try {
+    const task = await Task.create({
+      title: req.body.title,
+      description: req.body.description,
+      completed: req.body.completed,
+    });
+    res.json(task);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: err.message });
+  }
+});
+
+app.put("/api/tasks/:id", async (req, res) => {
+  const taskId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(taskId)) {
+    return res.status(400).send({ error: "Invalid Task ID" });
+  }
+  try {
+    const task = await Task.findByIdAndUpdate(taskId, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.json(task);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: err.message });
+  }
+});
+
+app.delete("/api/tasks/:id", async (req, res) => {
+  const taskId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(taskId)) {
+    return res.status(400).send({ error: "Invalid Task ID" });
+  }
+
+  try {
+    const task = await Task.findByIdAndDelete(taskId);
+
+    if (!task) {
+      return res.status(404).send({ error: "Task not found" });
+    }
+
+    res.status(200).send({ message: "Task deleted successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: err.message });
+  }
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`server is running on port ${process.env.PORT}`);
+});
