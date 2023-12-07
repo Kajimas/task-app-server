@@ -15,6 +15,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "http-errors": "^2.0.0",
@@ -23,7 +24,8 @@
     "nodemon": "^3.0.1",
     "pino": "^8.16.2",
     "pino-http": "^8.5.1",
-    "pino-pretty": "^10.2.3"
+    "pino-pretty": "^10.2.3",
+    "winston": "^3.11.0"
   },
   "bugs": {
     "url": "https://github.com/Kajimas/task-app-server/issues"
