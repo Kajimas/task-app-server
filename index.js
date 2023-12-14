@@ -49,6 +49,15 @@ const TaskSchema = new mongoose.Schema({
   },
 });
 
+TaskSchema.set('toJSON', {
+  transform: function (doc, ret, options) {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    delete ret.__v;
+    return ret;
+  }
+});
+
 // Compile our model
 const Task = mongoose.model("Task", TaskSchema);
 
