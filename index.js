@@ -26,7 +26,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 async function connectDB() {
   try {
     await mongoose.connect(uri);
-    logger.log("info", "MongoDB Connected");
+    logger.info("MongoDB Connected");
   } catch (err) {
     logger.error(`Mongoose connection error: ${err}`);
     process.exit(1);
@@ -176,5 +176,5 @@ app.delete("/api/tasks/:id", async (req, res) => {
  * Starts the local server
  */
 app.listen(process.env.PORT || 3000, () => {
-  logger.log("info", `server is running on port ${process.env.PORT}`);
+  logger.info(`server is running on port ${process.env.PORT}`);
 });
